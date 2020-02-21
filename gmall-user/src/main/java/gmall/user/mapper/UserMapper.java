@@ -1,9 +1,7 @@
 package gmall.user.mapper;
 
 import gmall.user.bean.UmsMember;
+import tk.mybatis.mapper.common.Mapper;
 
-import java.util.List;
-
-public interface UserMapper {
-    List<UmsMember> selectAll();
+public interface UserMapper extends Mapper<UmsMember> {
 }
