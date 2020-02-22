@@ -14,7 +14,7 @@
     <dependencies>
         <dependency>
             <groupId>tk.mybatis</groupId>
-            <artifactId>mapper-spring-boot-starter</artifactId>
+            <artifactId>mapper</artifactId>
         </dependency>
     </dependencies>
 </project>
