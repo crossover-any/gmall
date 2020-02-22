@@ -1,9 +1,7 @@
 package gmall.user.service;
 
-import gmall.user.bean.UmsMember;
-import gmall.user.bean.UmsMemberReceiveAddress;
-import org.springframework.stereotype.Service;
-
+import com.gmall.bean.UmsMemberReceiveAddress;
+import com.gmall.bean.UmsMember;
 import java.util.List;
 
 /**
