@@ -1,9 +1,9 @@
-package gmall.user.controller;
+package com.gmall.user.controller;
 
-import com.gmall.bean.UmsMemberReceiveAddress;
+import com.alibaba.dubbo.config.annotation.Reference;
 import com.gmall.bean.UmsMember;
+import com.gmall.bean.UmsMemberReceiveAddress;
 import com.gmall.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,7 +22,7 @@ import java.util.List;
 @RequestMapping("/user")
 public class UserController {
 
-    @Autowired
+    @Reference
     private UserService userService;
 
     @RequestMapping("/index")
