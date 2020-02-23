@@ -6,4 +6,6 @@ import java.util.List;
 
 public interface AttrInfoService {
     List<PmsBaseAttrInfo> getInfoList(String catalog3Id);
+
+    String addAttrInfo(PmsBaseAttrInfo pmsBaseAttrInfo);
 }

@@ -9,6 +9,7 @@ import com.gmall.service.CatalogService;
 import com.gmall.bean.PmsBaseCatalog1;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -53,9 +54,15 @@ public class CatalogController {
         return catalogService.selectCatalog3ByCatalog2Id(pmsBaseCatalog3);
     }
 
-    @RequestMapping("/spuList")
+    @RequestMapping("/attrInfoList")
     @ResponseBody
     public List<PmsBaseAttrInfo> getAttrInfoList(String catalog3Id){
         return attrInfoService.getInfoList(catalog3Id);
+    }
+
+    @RequestMapping("/saveAttrInfo")
+    @ResponseBody
+    public String addAttrInfo(@RequestBody PmsBaseAttrInfo pmsBaseAttrInfo){
+        return attrInfoService.addAttrInfo(pmsBaseAttrInfo);
     }
 }
