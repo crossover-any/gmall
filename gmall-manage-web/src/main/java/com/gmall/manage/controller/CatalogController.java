@@ -1,6 +1,8 @@
 package com.gmall.manage.controller;
 
 import com.alibaba.dubbo.config.annotation.Reference;
+import com.gmall.bean.PmsBaseCatalog2;
+import com.gmall.bean.PmsBaseCatalog3;
 import com.gmall.service.CatalogService;
 import com.gmall.bean.PmsBaseCatalog1;
 import org.springframework.stereotype.Controller;
@@ -18,6 +20,7 @@ import java.util.List;
  **/
 
 @Controller
+@CrossOrigin
 public class CatalogController {
 
     @Reference
@@ -27,5 +30,21 @@ public class CatalogController {
     @ResponseBody
     public List<PmsBaseCatalog1> getCatalog1(){
         return catalogService.selectCatalog1All();
+    }
+
+    @RequestMapping("/getCatalog2")
+    @ResponseBody
+    public List<PmsBaseCatalog2> getCatalog2(String catalog1Id){
+        PmsBaseCatalog2 pmsBaseCatalog2 = new PmsBaseCatalog2();
+        pmsBaseCatalog2.setCatalog1Id(catalog1Id);
+        return catalogService.selectCatalog2ByCatalog1Id(pmsBaseCatalog2);
+    }
+
+    @RequestMapping("/getCatalog3")
+    @ResponseBody
+    public List<PmsBaseCatalog3> getCatalog3(String catalog2Id){
+        PmsBaseCatalog3 pmsBaseCatalog3 = new PmsBaseCatalog3();
+        pmsBaseCatalog3.setCatalog2Id(catalog2Id);
+        return catalogService.selectCatalog3ByCatalog2Id(pmsBaseCatalog3);
     }
 }
