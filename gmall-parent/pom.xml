@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.2.4.RELEASE</version>
+        <version>1.5.10.RELEASE</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
@@ -37,11 +37,18 @@
         <jest.version>5.3.3</jest.version>
         <jna.version>5.2.0</jna.version>
         <beanUtils.version>1.8.3</beanUtils.version>
+        <mysql-connector.version>8.0.11</mysql-connector.version>
     </properties>
 
     <dependencyManagement>
 
         <dependencies>
+
+            <dependency>
+                <groupId>mysql</groupId>
+                <artifactId>mysql-connector-java</artifactId>
+                <version>${mysql-connector.version}</version>
+            </dependency>
 
             <dependency>
                 <groupId>com.alibaba</groupId>
