@@ -7,6 +7,8 @@ import com.gmall.manage.mapper.AttrInfoMapper;
 import com.gmall.manage.mapper.AttrValueMapper;
 import com.gmall.service.AttrInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
+import tk.mybatis.mapper.entity.Example;
 
 import java.util.List;
 
@@ -35,12 +37,33 @@ public class AttrInfoServiceImpl implements AttrInfoService {
 
     @Override
     public String addAttrInfo(PmsBaseAttrInfo pmsBaseAttrInfo) {
-        attrInfoMapper.insertSelective(pmsBaseAttrInfo);
-        List<PmsBaseAttrValue> list = pmsBaseAttrInfo.getAttrValueList();
-        for (PmsBaseAttrValue pmsBaseAttrValue : list) {
-            pmsBaseAttrValue.setAttrId(pmsBaseAttrInfo.getId());
-            attrValueMapper.insertSelective(pmsBaseAttrValue);
-        };
+        if (StringUtils.isEmpty(pmsBaseAttrInfo.getId())){
+            attrInfoMapper.insertSelective(pmsBaseAttrInfo);
+            List<PmsBaseAttrValue> list = pmsBaseAttrInfo.getAttrValueList();
+            for (PmsBaseAttrValue pmsBaseAttrValue : list) {
+                pmsBaseAttrValue.setAttrId(pmsBaseAttrInfo.getId());
+                attrValueMapper.insertSelective(pmsBaseAttrValue);
+            };
+        }else{
+            Example example = new Example(PmsBaseAttrInfo.class);
+            example.createCriteria().andEqualTo("id",pmsBaseAttrInfo.getId());
+            attrInfoMapper.updateByExample(pmsBaseAttrInfo,example);
+            List<PmsBaseAttrValue> list =  pmsBaseAttrInfo.getAttrValueList();
+            PmsBaseAttrValue pmsBaseAttrValueDel = new PmsBaseAttrValue();
+            pmsBaseAttrValueDel.setAttrId(pmsBaseAttrInfo.getId());
+            attrValueMapper.delete(pmsBaseAttrValueDel);
+            for (PmsBaseAttrValue attrValue:list) {
+                attrValue.setAttrId(pmsBaseAttrInfo.getId());
+                attrValueMapper.insertSelective(attrValue);
+            }
+        }
         return "success";
+    }
+
+    @Override
+    public List<PmsBaseAttrValue> getAttrValueList(String attrId) {
+        PmsBaseAttrValue pmsBaseAttrValue = new PmsBaseAttrValue();
+        pmsBaseAttrValue.setAttrId(attrId);
+        return attrValueMapper.select(pmsBaseAttrValue);
     }
 }

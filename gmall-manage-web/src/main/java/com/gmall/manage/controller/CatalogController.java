@@ -1,17 +1,11 @@
 package com.gmall.manage.controller;
 
 import com.alibaba.dubbo.config.annotation.Reference;
-import com.gmall.bean.PmsBaseAttrInfo;
-import com.gmall.bean.PmsBaseCatalog2;
-import com.gmall.bean.PmsBaseCatalog3;
+import com.gmall.bean.*;
 import com.gmall.service.AttrInfoService;
 import com.gmall.service.CatalogService;
-import com.gmall.bean.PmsBaseCatalog1;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -22,7 +16,7 @@ import java.util.List;
  * @Version 1.0
  **/
 
-@Controller
+@RestController
 @CrossOrigin
 public class CatalogController {
 
@@ -33,13 +27,11 @@ public class CatalogController {
     private AttrInfoService attrInfoService;
 
     @RequestMapping("/getCatalog1")
-    @ResponseBody
     public List<PmsBaseCatalog1> getCatalog1(){
         return catalogService.selectCatalog1All();
     }
 
     @RequestMapping("/getCatalog2")
-    @ResponseBody
     public List<PmsBaseCatalog2> getCatalog2(String catalog1Id){
         PmsBaseCatalog2 pmsBaseCatalog2 = new PmsBaseCatalog2();
         pmsBaseCatalog2.setCatalog1Id(catalog1Id);
@@ -47,7 +39,6 @@ public class CatalogController {
     }
 
     @RequestMapping("/getCatalog3")
-    @ResponseBody
     public List<PmsBaseCatalog3> getCatalog3(String catalog2Id){
         PmsBaseCatalog3 pmsBaseCatalog3 = new PmsBaseCatalog3();
         pmsBaseCatalog3.setCatalog2Id(catalog2Id);
@@ -55,14 +46,17 @@ public class CatalogController {
     }
 
     @RequestMapping("/attrInfoList")
-    @ResponseBody
     public List<PmsBaseAttrInfo> getAttrInfoList(String catalog3Id){
         return attrInfoService.getInfoList(catalog3Id);
     }
 
     @RequestMapping("/saveAttrInfo")
-    @ResponseBody
     public String addAttrInfo(@RequestBody PmsBaseAttrInfo pmsBaseAttrInfo){
         return attrInfoService.addAttrInfo(pmsBaseAttrInfo);
+    }
+
+    @RequestMapping("/getAttrValueList")
+    public List<PmsBaseAttrValue> getAttrValueList(String attrId){
+        return attrInfoService.getAttrValueList(attrId);
     }
 }
