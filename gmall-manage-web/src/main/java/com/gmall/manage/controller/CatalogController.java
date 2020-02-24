@@ -2,7 +2,7 @@ package com.gmall.manage.controller;
 
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.gmall.bean.*;
-import com.gmall.service.AttrInfoService;
+import com.gmall.service.AttrService;
 import com.gmall.service.CatalogService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -24,7 +24,7 @@ public class CatalogController {
     private CatalogService catalogService;
 
     @Reference
-    private AttrInfoService attrInfoService;
+    private AttrService attrService;
 
     @RequestMapping("/getCatalog1")
     public List<PmsBaseCatalog1> getCatalog1(){
@@ -47,16 +47,16 @@ public class CatalogController {
 
     @RequestMapping("/attrInfoList")
     public List<PmsBaseAttrInfo> getAttrInfoList(String catalog3Id){
-        return attrInfoService.getInfoList(catalog3Id);
+        return attrService.getInfoList(catalog3Id);
     }
 
     @RequestMapping("/saveAttrInfo")
     public String addAttrInfo(@RequestBody PmsBaseAttrInfo pmsBaseAttrInfo){
-        return attrInfoService.addAttrInfo(pmsBaseAttrInfo);
+        return attrService.addAttrInfo(pmsBaseAttrInfo);
     }
 
     @RequestMapping("/getAttrValueList")
     public List<PmsBaseAttrValue> getAttrValueList(String attrId){
-        return attrInfoService.getAttrValueList(attrId);
+        return attrService.getAttrValueList(attrId);
     }
 }
