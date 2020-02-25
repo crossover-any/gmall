@@ -34,14 +34,14 @@ public class SpuController {
 
     @RequestMapping("/saveSpuInfo")
     public String saveSpuInfo(@RequestBody PmsProductInfo pmsProductInfo){
+        spuService.saveSpuInfo(pmsProductInfo);
         return "success";
     }
 
     @RequestMapping("fileUpload")
     public String fileUpload(@RequestParam("file")MultipartFile multipartFile){
         String url = fastDFSUtil.uploadImg(multipartFile);
-        System.out.println(url);
-        return "success";
+        return url;
     }
 
 }
