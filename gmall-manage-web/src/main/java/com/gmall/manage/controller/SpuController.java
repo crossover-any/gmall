@@ -1,7 +1,7 @@
 package com.gmall.manage.controller;
 
 import com.alibaba.dubbo.config.annotation.Reference;
-import com.gmall.bean.PmsProductInfo;
+import com.gmall.bean.*;
 import com.gmall.manage.util.FastDFSUtil;
 import com.gmall.service.SpuService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +42,16 @@ public class SpuController {
     public String fileUpload(@RequestParam("file")MultipartFile multipartFile){
         String url = fastDFSUtil.uploadImg(multipartFile);
         return url;
+    }
+
+    @RequestMapping("/spuImageList")
+    public List<PmsProductImage> getSpuImageList(String spuId){
+        return spuService.getSpuImageList(spuId);
+    }
+
+    @RequestMapping("/spuSaleAttrList")
+    public List<PmsProductSaleAttr> spuSaleAttrList(String spuId){
+        return spuService.getSpuSaleAttrList(spuId);
     }
 
 }

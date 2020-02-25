@@ -1,18 +1,17 @@
 package com.gmall.manage.service.impl;
 
 import com.alibaba.dubbo.config.annotation.Service;
-import com.gmall.bean.PmsBaseAttrInfo;
-import com.gmall.bean.PmsBaseAttrValue;
-import com.gmall.bean.PmsBaseSaleAttr;
-import com.gmall.bean.PmsProductSaleAttr;
+import com.gmall.bean.*;
 import com.gmall.manage.mapper.AttrInfoMapper;
 import com.gmall.manage.mapper.AttrValueMapper;
 import com.gmall.manage.mapper.PmsBaseSaleAttrMapper;
+import com.gmall.manage.mapper.PmsProductImageMapper;
 import com.gmall.service.AttrService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import tk.mybatis.mapper.entity.Example;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -34,11 +33,22 @@ public class AttrServiceImpl implements AttrService {
     @Autowired
     private PmsBaseSaleAttrMapper pmsBaseSaleAttrMapper;
 
+    @Autowired
+    private PmsProductImageMapper pmsProductImageMapper;
+
     @Override
     public List<PmsBaseAttrInfo> getInfoList(String catalog3Id) {
         PmsBaseAttrInfo pmsBaseAttrInfo = new PmsBaseAttrInfo();
         pmsBaseAttrInfo.setCatalog3Id(catalog3Id);
-        return attrInfoMapper.select(pmsBaseAttrInfo);
+        List<PmsBaseAttrInfo> pmsBaseAttrInfos =  attrInfoMapper.select(pmsBaseAttrInfo);
+        for (PmsBaseAttrInfo baseAttrInfo: pmsBaseAttrInfos) {
+            List<PmsBaseAttrValue> pmsBaseAttrValues = new ArrayList<>();
+            PmsBaseAttrValue pmsBaseAttrValue = new PmsBaseAttrValue();
+            pmsBaseAttrValue.setAttrId(baseAttrInfo.getId());
+            pmsBaseAttrValues = attrValueMapper.select(pmsBaseAttrValue);
+            baseAttrInfo.setAttrValueList(pmsBaseAttrValues);
+        }
+        return pmsBaseAttrInfos;
     }
 
     @Override

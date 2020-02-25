@@ -66,4 +66,26 @@ public class SpuServiceImpl implements SpuService {
             }
         }
     }
+
+    @Override
+    public List<PmsProductImage> getSpuImageList(String spuId) {
+        PmsProductImage pmsProductImage = new PmsProductImage();
+        pmsProductImage.setProductId(spuId);
+        return pmsProductImageMapper.select(pmsProductImage);
+    }
+
+    @Override
+    public List<PmsProductSaleAttr> getSpuSaleAttrList(String spuId) {
+        PmsProductSaleAttr pmsProductSaleAttr = new PmsProductSaleAttr();
+        pmsProductSaleAttr.setProductId(spuId);
+        List<PmsProductSaleAttr> pmsProductSaleAttrList = pmsProductSaleAttrMapper.select(pmsProductSaleAttr);
+        for (PmsProductSaleAttr saleAttr: pmsProductSaleAttrList) {
+            PmsProductSaleAttrValue pmsProductSaleAttrValue = new PmsProductSaleAttrValue();
+            pmsProductSaleAttrValue.setProductId(spuId);
+            pmsProductSaleAttrValue.setSaleAttrId(saleAttr.getSaleAttrId());
+            List<PmsProductSaleAttrValue> list =  pmsProductSaleAttrValueMapper.select(pmsProductSaleAttrValue);
+            saleAttr.setSpuSaleAttrValueList(list);
+        }
+        return pmsProductSaleAttrList;
+    }
 }
