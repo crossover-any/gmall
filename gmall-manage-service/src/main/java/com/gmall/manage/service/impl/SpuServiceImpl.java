@@ -2,13 +2,11 @@ package com.gmall.manage.service.impl;
 
 import com.alibaba.dubbo.config.annotation.Service;
 import com.gmall.bean.*;
-import com.gmall.manage.mapper.PmsProductImageMapper;
-import com.gmall.manage.mapper.PmsProductInfoMapper;
-import com.gmall.manage.mapper.PmsProductSaleAttrMapper;
-import com.gmall.manage.mapper.PmsProductSaleAttrValueMapper;
+import com.gmall.manage.mapper.*;
 import com.gmall.service.SpuService;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -31,6 +29,9 @@ public class SpuServiceImpl implements SpuService {
 
     @Autowired
     private PmsProductSaleAttrValueMapper pmsProductSaleAttrValueMapper;
+
+    @Autowired
+    private PmsSkuInfoMapper pmsSkuInfoMapper;
 
     @Override
     public List<PmsProductInfo> spuList(String catalog3Id) {
@@ -87,5 +88,24 @@ public class SpuServiceImpl implements SpuService {
             saleAttr.setSpuSaleAttrValueList(list);
         }
         return pmsProductSaleAttrList;
+    }
+
+    @Override
+    public List<PmsProductSaleAttr> spuSaleAttrListCheckBySku(String spuId,String skuId) {
+        /*PmsSkuInfo pmsSkuInfo = pmsSkuInfoMapper.selectByPrimaryKey(skuId);
+        String spuId = pmsSkuInfo.getProductId();
+        PmsProductSaleAttr pmsProductSaleAttr = new PmsProductSaleAttr();
+        pmsProductSaleAttr.setProductId(spuId);
+        List<PmsProductSaleAttr> list =  pmsProductSaleAttrMapper.select(pmsProductSaleAttr);
+        for (PmsProductSaleAttr saleAttr : list) {
+            PmsProductSaleAttrValue saleAttrValue = new PmsProductSaleAttrValue();
+            saleAttrValue.setProductId(spuId);
+            saleAttrValue.setSaleAttrId(saleAttr.getSaleAttrId());
+            List<PmsProductSaleAttrValue> saleAttrValues = new ArrayList<>();
+            saleAttrValues = pmsProductSaleAttrValueMapper.select(saleAttrValue);
+            saleAttr.setSpuSaleAttrValueList(saleAttrValues);
+        }*/
+        List<PmsProductSaleAttr> list = pmsProductSaleAttrMapper.spuSaleAttrListCheckBySku(spuId,skuId);
+        return list;
     }
 }
