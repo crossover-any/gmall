@@ -31,9 +31,11 @@ public class ItemController {
     @RequestMapping("/{skuId}.html")
     public String index(@PathVariable String skuId, ModelMap modelMap){
         PmsSkuInfo pmsSkuInfo = skuService.getPmsSkuInfo(skuId);
-        List<PmsProductSaleAttr> spuSaleAttrListCheckBySku = spuService.spuSaleAttrListCheckBySku(pmsSkuInfo.getProductId(),skuId);
-        modelMap.addAttribute("skuInfo",pmsSkuInfo);
-        modelMap.addAttribute("spuSaleAttrListCheckBySku",spuSaleAttrListCheckBySku);
+        if (pmsSkuInfo != null){
+            List<PmsProductSaleAttr> spuSaleAttrListCheckBySku = spuService.spuSaleAttrListCheckBySku(pmsSkuInfo.getProductId(),skuId);
+            modelMap.addAttribute("skuInfo",pmsSkuInfo);
+            modelMap.addAttribute("spuSaleAttrListCheckBySku",spuSaleAttrListCheckBySku);
+        }
         return "item";
     }
 }

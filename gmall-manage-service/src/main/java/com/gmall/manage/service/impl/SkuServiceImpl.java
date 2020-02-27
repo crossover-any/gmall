@@ -1,6 +1,7 @@
 package com.gmall.manage.service.impl;
 
 import com.alibaba.dubbo.config.annotation.Service;
+import com.alibaba.fastjson.JSON;
 import com.gmall.bean.PmsSkuAttrValue;
 import com.gmall.bean.PmsSkuImage;
 import com.gmall.bean.PmsSkuInfo;
@@ -11,6 +12,8 @@ import com.gmall.manage.mapper.PmsSkuInfoMapper;
 import com.gmall.manage.mapper.PmsSkuSaleAttrValueMapper;
 import com.gmall.service.SkuService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 
@@ -35,6 +38,9 @@ public class SkuServiceImpl implements SkuService {
 
     @Autowired
     private PmsSkuSaleAttrValueMapper pmsSkuSaleAttrValueMapper;
+
+    @Autowired
+    private RedisTemplate<String,String> redisTemplate;
 
 
     @Override
@@ -63,11 +69,22 @@ public class SkuServiceImpl implements SkuService {
 
     @Override
     public PmsSkuInfo getPmsSkuInfo(String skuId) {
-        PmsSkuInfo pmsSkuInfo = pmsSkuInfoMapper.selectByPrimaryKey(skuId);
-        PmsSkuImage image = new PmsSkuImage();
-        image.setSkuId(skuId);
-        List<PmsSkuImage> images = pmsSkuImageMapper.select(image);
-        pmsSkuInfo.setSkuImageList(images);
+        String key = "sku"+skuId+"info";
+        String skuInfoJSonStr = redisTemplate.opsForValue().get(key);
+        PmsSkuInfo pmsSkuInfo = null;
+        if (StringUtils.isEmpty(skuInfoJSonStr)){
+            pmsSkuInfo = pmsSkuInfoMapper.selectByPrimaryKey(skuId);
+            if (pmsSkuInfo == null){
+                return null;
+            }
+            PmsSkuImage image = new PmsSkuImage();
+            image.setSkuId(skuId);
+            List<PmsSkuImage> images = pmsSkuImageMapper.select(image);
+            pmsSkuInfo.setSkuImageList(images);
+            redisTemplate.opsForValue().set(key, JSON.toJSONString(pmsSkuInfo));
+        }else{
+            pmsSkuInfo = JSON.parseObject(skuInfoJSonStr,PmsSkuInfo.class);
+        }
         return pmsSkuInfo;
     }
 }
