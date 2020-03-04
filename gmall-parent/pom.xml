@@ -38,7 +38,8 @@
         <jna.version>5.2.0</jna.version>
         <beanUtils.version>1.8.3</beanUtils.version>
         <mysql-connector.version>8.0.11</mysql-connector.version>
-        <redis.version>2.2.4</redis.version>
+        <redis.version>2.2.4.RELEASE</redis.version>
+        <redisson.version>3.12.2</redisson.version>
     </properties>
 
     <dependencyManagement>
@@ -158,6 +159,12 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-data-redis</artifactId>
                 <version>${redis.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.redisson</groupId>
+                <artifactId>redisson</artifactId>
+                <version>${redisson.version}</version>
             </dependency>
 
         </dependencies>

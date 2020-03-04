@@ -14,7 +14,9 @@ import com.gmall.service.SkuService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.util.StringUtils;
+import redis.clients.jedis.Jedis;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -86,5 +88,18 @@ public class SkuServiceImpl implements SkuService {
             pmsSkuInfo = JSON.parseObject(skuInfoJSonStr,PmsSkuInfo.class);
         }
         return pmsSkuInfo;
+    }
+
+    @Override
+    public List<PmsSkuInfo> getAllPmsSkuInfo() {
+        List<PmsSkuInfo> pmsSkuInfos = pmsSkuInfoMapper.selectAll();
+        for (PmsSkuInfo pmsSkuInfo : pmsSkuInfos) {
+            PmsSkuAttrValue pmsSkuAttrValue = new PmsSkuAttrValue();
+            pmsSkuAttrValue.setSkuId(pmsSkuInfo.getId());
+            List<PmsSkuAttrValue> pmsSkuAttrValues = new ArrayList<>();
+            pmsSkuAttrValues = pmsSkuAttrValueMapper.select(pmsSkuAttrValue);
+            pmsSkuInfo.setSkuAttrValueList(pmsSkuAttrValues);
+        }
+        return pmsSkuInfos;
     }
 }
