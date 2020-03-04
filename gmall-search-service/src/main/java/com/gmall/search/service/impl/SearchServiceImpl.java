@@ -16,6 +16,7 @@ import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.MatchQueryBuilder;
 import org.elasticsearch.index.query.TermQueryBuilder;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.elasticsearch.search.highlight.HighlightBuilder;
 import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,7 @@ import org.springframework.util.StringUtils;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Author Tengxq
@@ -58,6 +60,9 @@ public class SearchServiceImpl implements SearchService {
         List<SearchResult.Hit<PmsSearchSkuInfo, Void>> hits = result.getHits(PmsSearchSkuInfo.class);
         for (SearchResult.Hit<PmsSearchSkuInfo, Void> hit : hits) {
             PmsSearchSkuInfo pmsSearchSkuInfo = hit.source;
+            Map<String, List<String>> highlight = hit.highlight;
+            String skuName = highlight.get("skuName").get(0);
+            pmsSearchSkuInfo.setSkuName(skuName);
             list.add(pmsSearchSkuInfo);
         }
         return list;
@@ -106,7 +111,12 @@ public class SearchServiceImpl implements SearchService {
         searchSourceBuilder.sort("id", SortOrder.DESC);
         searchSourceBuilder.from(0);
         searchSourceBuilder.size(20);
-        searchSourceBuilder.highlight();
+
+        HighlightBuilder highlightBuilder = new HighlightBuilder();
+        highlightBuilder.postTags("</strong>");
+        highlightBuilder.preTags("<strong>");
+        highlightBuilder.field("skuName");
+        searchSourceBuilder.highlight(highlightBuilder);
         return searchSourceBuilder.toString();
     }
 }
