@@ -1,8 +1,8 @@
 package com.gmall.search.controller;
 
 import com.alibaba.dubbo.config.annotation.Reference;
-import com.gmall.bean.PmsSearchParam;
-import com.gmall.bean.PmsSearchSkuInfo;
+import com.gmall.bean.*;
+import com.gmall.service.AttrService;
 import com.gmall.service.SearchService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -11,7 +11,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.nio.channels.FileChannel;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @Author Tengxq
@@ -28,6 +30,10 @@ public class SearchController {
     private SearchService searchService;
 
 
+    @Reference
+    private AttrService attrService;
+
+
     @RequestMapping("index")
     public String index(){
         return "index";
@@ -37,7 +43,16 @@ public class SearchController {
     public String list(PmsSearchParam pmsSearchParam, ModelMap modelMap){
         //调用搜索服务，返回搜索结果
         List<PmsSearchSkuInfo> list = searchService.getSearchInfo(pmsSearchParam);
+        Set<String> set = new HashSet<>();
+        for (PmsSearchSkuInfo pmsSearchSkuInfo : list) {
+            List<PmsSkuAttrValue> skuAttrValueList = pmsSearchSkuInfo.getSkuAttrValueList();
+            for (PmsSkuAttrValue pmsSkuAttrValue : skuAttrValueList) {
+                set.add(pmsSkuAttrValue.getValueId());
+            }
+        }
+        List<PmsBaseAttrInfo> saleAttrs = attrService.getAttrValueListByValueId(set);
         modelMap.addAttribute("skuLsInfoList",list);
+        modelMap.addAttribute("attrList",saleAttrs);
         return "list";
     }
 

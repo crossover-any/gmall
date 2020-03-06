@@ -1,15 +1,11 @@
 package com.gmall.search.service.impl;
 
-import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.dubbo.config.annotation.Service;
 import com.gmall.bean.PmsSearchParam;
 import com.gmall.bean.PmsSearchSkuInfo;
 import com.gmall.bean.PmsSkuAttrValue;
-import com.gmall.bean.PmsSkuInfo;
 import com.gmall.service.SearchService;
-import com.gmall.service.SkuService;
 import io.searchbox.client.JestClient;
-import io.searchbox.core.Index;
 import io.searchbox.core.Search;
 import io.searchbox.core.SearchResult;
 import org.elasticsearch.index.query.BoolQueryBuilder;
@@ -61,8 +57,10 @@ public class SearchServiceImpl implements SearchService {
         for (SearchResult.Hit<PmsSearchSkuInfo, Void> hit : hits) {
             PmsSearchSkuInfo pmsSearchSkuInfo = hit.source;
             Map<String, List<String>> highlight = hit.highlight;
-            String skuName = highlight.get("skuName").get(0);
-            pmsSearchSkuInfo.setSkuName(skuName);
+            if (highlight != null){
+                String skuName = highlight.get("skuName").get(0);
+                pmsSearchSkuInfo.setSkuName(skuName);
+            }
             list.add(pmsSearchSkuInfo);
         }
         return list;

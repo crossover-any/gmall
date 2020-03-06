@@ -7,12 +7,13 @@ import com.gmall.manage.mapper.AttrValueMapper;
 import com.gmall.manage.mapper.PmsBaseSaleAttrMapper;
 import com.gmall.manage.mapper.PmsProductImageMapper;
 import com.gmall.service.AttrService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.StringUtils;
 import tk.mybatis.mapper.entity.Example;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @Author Tengxq
@@ -53,7 +54,7 @@ public class AttrServiceImpl implements AttrService {
 
     @Override
     public String addAttrInfo(PmsBaseAttrInfo pmsBaseAttrInfo) {
-        if (StringUtils.isEmpty(pmsBaseAttrInfo.getId())){
+        if (StringUtils.isBlank(pmsBaseAttrInfo.getId())){
             attrInfoMapper.insertSelective(pmsBaseAttrInfo);
             List<PmsBaseAttrValue> list = pmsBaseAttrInfo.getAttrValueList();
             for (PmsBaseAttrValue pmsBaseAttrValue : list) {
@@ -86,5 +87,12 @@ public class AttrServiceImpl implements AttrService {
     @Override
     public List<PmsBaseSaleAttr> baseSaleAttrList() {
         return pmsBaseSaleAttrMapper.selectAll();
+    }
+
+    @Override
+    public List<PmsBaseAttrInfo> getAttrValueListByValueId(Set<String> set) {
+        String valueIdStr = StringUtils.join(set,",");
+        List<PmsBaseAttrInfo> list =  attrInfoMapper.selectAttrValueListByValueId(valueIdStr);
+        return list;
     }
 }
