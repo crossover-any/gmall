@@ -49,7 +49,7 @@ public class SearchController {
             }
         }
         List<PmsBaseAttrInfo> saleAttrs = attrService.getAttrValueListByValueId(set);
-        saleAttrs = removeSelectedAttr(saleAttrs,pmsSearchParam.getValueId());
+        saleAttrs = removeSelectedAttr(saleAttrs,pmsSearchParam,modelMap);
         String urlParam = getUrlParam(pmsSearchParam);
         modelMap.addAttribute("urlParam",urlParam);
         modelMap.addAttribute("skuLsInfoList",list);
@@ -57,27 +57,35 @@ public class SearchController {
         return "list";
     }
 
-    private List<PmsBaseAttrInfo> removeSelectedAttr(List<PmsBaseAttrInfo> saleAttrs,String[] valueIds) {
+    private List<PmsBaseAttrInfo> removeSelectedAttr(List<PmsBaseAttrInfo> saleAttrs,PmsSearchParam pmsSearchParam,ModelMap modelMap) {
+        String[] valueIds = pmsSearchParam.getValueId();
         if (valueIds != null){
             Iterator<PmsBaseAttrInfo> iterator = saleAttrs.iterator();
             HashSet<String> valueSet = new HashSet<>();
             for (String valueId : valueIds) {
                 valueSet.add(valueId);
             }
+            List<PmsSearchCrumb> crumbs = new ArrayList<>();
             while (iterator.hasNext()){
                 PmsBaseAttrInfo pmsBaseAttrInfo = iterator.next();
                 List<PmsBaseAttrValue> attrValueList = pmsBaseAttrInfo.getAttrValueList();
                 for (PmsBaseAttrValue pmsBaseAttrValue : attrValueList) {
                     if (valueSet.contains(pmsBaseAttrValue.getId())){
+                        PmsSearchCrumb pmsSearchCrumb = new PmsSearchCrumb();
+                        pmsSearchCrumb.setUrlParam(getUrlParam(pmsSearchParam,pmsBaseAttrValue.getId()));
+                        pmsSearchCrumb.setValueName(pmsBaseAttrValue.getValueName());
+                        pmsSearchCrumb.setValueId(pmsBaseAttrValue.getId());
+                        crumbs.add(pmsSearchCrumb);
                         iterator.remove();
                     }
                 }
             }
+            modelMap.addAttribute("attrValueSelectedList",crumbs);
         }
         return saleAttrs;
     }
 
-    private String getUrlParam(PmsSearchParam pmsSearchParam) {
+    private String getUrlParam(PmsSearchParam pmsSearchParam,String ... delValueId) {
         String[] valueIds = pmsSearchParam.getValueId();
         String urlParam = "";
         String keyWord = pmsSearchParam.getKeyword();
@@ -95,9 +103,21 @@ public class SearchController {
             urlParam+="catalog3Id="+catalog3Id;
         }
         if(valueIds != null){
-            for (String valueId : valueIds) {
-                urlParam+="&valueId="+valueId;
+            if (delValueId != null){
+                for (String del : delValueId) {
+                    for (String valueId : valueIds) {
+                        if (del.equals(valueId)){
+                            continue;
+                        }
+                        urlParam+="&valueId="+valueId;
+                    }
+                }
+            }else{
+                for (String valueId : valueIds) {
+                    urlParam+="&valueId="+valueId;
+                }
             }
+
         }
         return urlParam;
     }
