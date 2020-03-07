@@ -103,7 +103,7 @@ public class SearchController {
             urlParam+="catalog3Id="+catalog3Id;
         }
         if(valueIds != null){
-            if (delValueId != null){
+            if (delValueId.length!=0){
                 for (String del : delValueId) {
                     for (String valueId : valueIds) {
                         if (del.equals(valueId)){
