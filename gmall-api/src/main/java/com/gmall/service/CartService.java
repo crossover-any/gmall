@@ -12,15 +12,9 @@ public interface CartService {
 
     void insertCart(OmsCartItem cartInfo);
 
-    void syncCache(String userId);
+    void syncCache(String userId,List<OmsCartItem> omsCartItems);
 
     List<OmsCartItem> getCartCache(String userId);
 
-    void updateCartChecked(OmsCartItem cartInfo);
-
-    void combineCart(List<OmsCartItem> cartInfos, String userId);
-
-    List<OmsCartItem> getCartCacheByChecked(String userId);
-
-    void deleteCartById(List<OmsCartItem> cartInfos);
+    List<OmsCartItem> cartList(String userId);
 }

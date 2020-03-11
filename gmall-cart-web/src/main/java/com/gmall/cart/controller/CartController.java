@@ -2,6 +2,7 @@ package com.gmall.cart.controller;
 
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.gmall.bean.OmsCartItem;
 import com.gmall.bean.PmsSkuInfo;
 import com.gmall.service.CartService;
@@ -9,6 +10,7 @@ import com.gmall.service.SkuService;
 import com.gmall.web.util.CookieUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import javax.servlet.http.HttpServletRequest;
@@ -35,6 +37,22 @@ public class CartController {
     @Reference
     private CartService cartService;
 
+    @RequestMapping("/cartList")
+    public String cartListPage(HttpServletRequest request,ModelMap modelMap){
+        String userId = "1";
+        String page = "cartList";
+        List<OmsCartItem> omsCartItemList = null;
+        //用户已经登陆
+        if (StringUtils.isNotBlank(userId)){
+            omsCartItemList = cartService.cartList(userId);
+        }else{
+            String cartListCookie = CookieUtil.getCookieValue(request, "cartListCookie", true);
+            omsCartItemList = JSON.parseArray(cartListCookie,OmsCartItem.class);
+        }
+        modelMap.addAttribute("cartList",omsCartItemList);
+        return page;
+    }
+
     @RequestMapping("/addToCart")
     public String toCartPage(String skuId, int quantity, HttpServletRequest request, HttpServletResponse response){
         if (StringUtils.isBlank(skuId)){
@@ -58,11 +76,14 @@ public class CartController {
         if (StringUtils.isNotBlank(userId)){
             OmsCartItem oms = cartService.ifCartExist(userId, skuId);
             if (oms == null){
+                //用户没有添加过此商品
                 omsCartItem.setQuantity(new BigDecimal(quantity));
                 omsCartItem.setMemberId(userId);
                 cartService.insertCart(omsCartItem);
             }else{
-
+                //用户添加过此商品
+                oms.setQuantity(oms.getQuantity().add(new BigDecimal(quantity)));
+                cartService.updateCart(oms);
             }
         }else{
             //用户未登录
@@ -89,5 +110,49 @@ public class CartController {
 
 
         return "redirect:/success.html";
+    }
+
+    @RequestMapping("/checkCart")
+    public String checkCart(String skuId,String isChecked,HttpServletRequest request, HttpServletResponse response,ModelMap map){
+        if (StringUtils.isBlank(skuId) || StringUtils.isBlank(isChecked)){
+            return "error";
+        }
+        String userId = (String) request.getAttribute("userId");
+        OmsCartItem omsCartItem = new OmsCartItem();
+        omsCartItem.setMemberId("1");
+        omsCartItem.setProductSkuId(skuId);
+        omsCartItem.setIsChecked(isChecked);
+        List<OmsCartItem> omsCartItemList = null;
+        if (StringUtils.isNotBlank(userId)){
+            //用户登录，更新数据库并从缓存中查找数据
+            cartService.updateCart(omsCartItem);
+            omsCartItemList = cartService.getCartCache(userId);
+        }else{
+            //用户未登录，更新Cookie中数据
+            String cartListCookie = CookieUtil.getCookieValue(request, "cartListCookie", true);
+            omsCartItemList = JSONObject.parseArray(cartListCookie,OmsCartItem.class);
+            for (OmsCartItem cartItem : omsCartItemList) {
+                if (skuId.equals(cartItem.getProductSkuId())){
+                    cartItem.setIsChecked(isChecked);
+                    break;
+                }
+            }
+            CookieUtil.setCookie(request,response,"cartListCookie",JSON.toJSONString(omsCartItemList),3600*72,true);
+        }
+        map.addAttribute("cartList",omsCartItemList);
+        return "cartListInner";
+    }
+
+    public BigDecimal getTotalCount(String userId){
+        List<OmsCartItem> cartCache = cartService.getCartCache(userId);
+        BigDecimal total = new BigDecimal(0).setScale(2,BigDecimal.ROUND_HALF_DOWN);
+        if (cartCache != null){
+            for (OmsCartItem omsCartItem : cartCache) {
+                if ("1".equals(omsCartItem.getIsChecked())){
+                    total = total.add(omsCartItem.getTotalPrice());
+                }
+            }
+        }
+        return total;
     }
 }

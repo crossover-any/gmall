@@ -35,9 +35,9 @@
         </dependency>
 
         <dependency>
-            <groupId>tk.mybatis</groupId>
-            <artifactId>mapper</artifactId>
-        </dependency>
+        <groupId>tk.mybatis</groupId>
+        <artifactId>mapper</artifactId>
+    </dependency>
 
         <dependency>
             <groupId>redis.clients</groupId>
