@@ -7,6 +7,7 @@ import com.gmall.bean.OmsCartItem;
 import com.gmall.bean.PmsSkuInfo;
 import com.gmall.service.CartService;
 import com.gmall.service.SkuService;
+import com.gmall.web.annotations.LoginRequired;
 import com.gmall.web.util.CookieUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
@@ -50,6 +51,7 @@ public class CartController {
             omsCartItemList = JSON.parseArray(cartListCookie,OmsCartItem.class);
         }
         modelMap.addAttribute("cartList",omsCartItemList);
+        modelMap.addAttribute("totalCount",getTotalCount(omsCartItemList));
         return page;
     }
 
@@ -140,14 +142,20 @@ public class CartController {
             CookieUtil.setCookie(request,response,"cartListCookie",JSON.toJSONString(omsCartItemList),3600*72,true);
         }
         map.addAttribute("cartList",omsCartItemList);
+        map.addAttribute("totalCount",getTotalCount(omsCartItemList));
         return "cartListInner";
     }
 
-    public BigDecimal getTotalCount(String userId){
-        List<OmsCartItem> cartCache = cartService.getCartCache(userId);
+    @RequestMapping("/toTrade")
+    @LoginRequired
+    public String toTrade(){
+        return "toTrade";
+    }
+
+    public BigDecimal getTotalCount(List<OmsCartItem> omsCartItems){
         BigDecimal total = new BigDecimal(0).setScale(2,BigDecimal.ROUND_HALF_DOWN);
-        if (cartCache != null){
-            for (OmsCartItem omsCartItem : cartCache) {
+        if (omsCartItems != null){
+            for (OmsCartItem omsCartItem : omsCartItems) {
                 if ("1".equals(omsCartItem.getIsChecked())){
                     total = total.add(omsCartItem.getTotalPrice());
                 }
