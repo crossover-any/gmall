@@ -15,4 +15,6 @@ public interface UserService {
     List<UmsMember> getAllUser();
 
     List<UmsMemberReceiveAddress> getReceiveAddressByUser(UmsMemberReceiveAddress address);
+
+    UmsMember getUser(UmsMember umsMember);
 }
