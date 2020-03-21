@@ -31,6 +31,16 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public UmsMember getUser(UmsMember umsMember) {
+        return null;
+    }
+
+    @Override
+    public void addUserToken(String userId, String token) {
+
+    }
+
+    @Override
     public List<UmsMember> getAllUser() {
         return userMapper.selectAll();
     }

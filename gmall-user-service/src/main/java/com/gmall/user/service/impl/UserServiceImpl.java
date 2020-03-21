@@ -43,20 +43,27 @@ public class UserServiceImpl implements UserService {
         if (redisTemplate != null){
             dbUser = JSON.parseObject(redisTemplate.opsForValue().get(key),UmsMember.class);
             if (dbUser == null){
-                dbUser = userMapper.selectByPrimaryKey(umsMember.getId());
+                UmsMember user = new UmsMember();
+                user.setUsername(umsMember.getUsername());
+                dbUser = userMapper.selectOne(user);
                 if (dbUser!= null && dbUser.getPassword().equals(umsMember.getPassword())){
                     redisTemplate.opsForValue().set("user:"+dbUser.getUsername()+dbUser.getPassword()+":password",JSON.toJSONString(dbUser));
-                    return dbUser;
                 }
             }
         }else{
-            dbUser = userMapper.selectByPrimaryKey(umsMember.getId());
+            UmsMember user = new UmsMember();
+            user.setUsername(umsMember.getUsername());
+            dbUser = userMapper.selectOne(user);
             if (dbUser!= null && dbUser.getPassword().equals(umsMember.getPassword())){
                 redisTemplate.opsForValue().set("user:"+dbUser.getUsername()+dbUser.getPassword()+":password",JSON.toJSONString(dbUser));
-                return dbUser;
             }
         }
-        return null;
+        return dbUser;
+    }
+
+    @Override
+    public void addUserToken(String userId, String token) {
+        redisTemplate.opsForValue().set("user:"+userId+":token",token,2*3600);
     }
 
     @Override
