@@ -148,7 +148,10 @@ public class CartController {
 
     @RequestMapping("/toTrade")
     @LoginRequired
-    public String toTrade(){
+    public String toTrade(HttpServletRequest request){
+        String memberId = (String) request.getAttribute("memberId");
+        String nickName = (String) request.getAttribute("nickName");
+        System.out.println(memberId+nickName);
         return "toTrade";
     }
 

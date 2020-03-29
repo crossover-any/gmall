@@ -54,7 +54,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
                 //验证token
                 if (StringUtils.isNotBlank(token) && !"failed".equals(statusStr)) {
                         map = JSON.parseObject(statusStr,Map.class);
-                        request.setAttribute("userId",map.get("userId"));
+                        request.setAttribute("memberId",map.get("memberId"));
                         request.setAttribute("nickName",map.get("nickName"));
                 } else {
                     StringBuffer requestURL = request.getRequestURL();
